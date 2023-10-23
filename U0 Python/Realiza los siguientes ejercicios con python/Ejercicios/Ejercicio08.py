@@ -11,3 +11,8 @@ def sum(tabla):
         suma += i
     # Devuelvo el resultado de la suma
     return suma
+
+# Pruebo la función sum() con una lista de números
+numeros = [1, 2, 3, 4, 5]
+resultado = sum(numeros)
+print(resultado)

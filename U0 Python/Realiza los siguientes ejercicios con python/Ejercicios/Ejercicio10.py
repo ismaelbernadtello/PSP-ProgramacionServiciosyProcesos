@@ -12,3 +12,7 @@ def mayorYmenor(tabla):
             menor = string
     print("El string con mayor longitud es:", mayor)
     print("El string con menor longitud es:", menor)
+
+# Pruebo la función mayorYmenor() con una lista de strings
+strings = ["hola", "adios", "buenos dias"]
+mayorYmenor(strings)

@@ -7,3 +7,9 @@ def indexContains(tabla, cadena):
         if tabla[i] == cadena:
             return i
     return -1
+
+    # Pruebo la función indexContains() con una lista de strings
+    tabla = ["hola", "adios", "buenos dias"]
+    cadena = "adios"
+    resultado = indexContains(tabla, cadena)
+    print(resultado)

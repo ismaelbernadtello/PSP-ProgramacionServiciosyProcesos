@@ -11,35 +11,80 @@
 #                                     Si [matrix] no tiene el mismo número de filas y columnas que la matriz inicial, la operación no se puede realizar (notificalo).
 
 class Matriz:
-    def __init__(self, rows, columns):
-        self.rows = rows
-        self.columns = columns
-        self.matrix = [[0 for j in range(columns)] for i in range(rows)]
+    def __init__(self, filas, columnas): 
+        self.filas = filas 
+        self.columnas = columnas 
+        self.matriz = [[0 for j in range(columnas)] for i in range(filas)] 
+    
+    def getNumeroFilas(self): 
+        return self.filas 
+    
+    def getNumeroColumnas(self): 
+        return self.columnas 
+    
+    def setElemento(self, x, j, elemento): 
+        self.matriz[x][j] = elemento 
+    
+    def sumarMatriz(self, matriz): 
+        if len(matriz) != self.filas or len(matriz[0]) != self.columnas: 
+            print("Error: la matriz argumento no tiene el mismo tamaño que la matriz actual.") 
+            return 
+        for i in range(self.filas): 
+            for j in range(self.columnas): 
+                self.matriz[i][j] += matriz[i][j] 
+    
+    def multiplicarMatriz(self, matriz): 
+        if len(matriz) != self.columnas: 
+            print("Error: el número de filas de la matriz argumento no coincide con el número de columnas de la matriz actual.") 
+            return 
+        resultado = [[0 for j in range(len(matriz[0]))] for i in range(self.filas)] 
+        for i in range(self.filas): 
+            for j in range(len(matriz[0])): 
+                for k in range(self.columnas): 
+                    resultado[i][j] += self.matriz[i][k] * matriz[k][j] 
+        self.matriz = resultado
+        
+        
+# Pruebo Todas las funciones de la clase, Te quiero mucho copilot <3
 
-    def getNumberRows(self):
-        return self.rows
+# Crear una instancia de la clase Matriz
+mi_matriz = Matriz(3, 3)
 
-    def getNumberColumns(self):
-        return self.columns
+# Imprimir el número de filas y columnas de la matriz
+print("Número de filas:", mi_matriz.getNumeroFilas())
+print("Número de columnas:", mi_matriz.getNumeroColumnas())
 
-    def setElement(self, x, j, element):
-        self.matrix[x][j] = element
+# Establecer elementos en la matriz
+mi_matriz.setElemento(0, 0, 1)
+mi_matriz.setElemento(0, 1, 2)
+mi_matriz.setElemento(0, 2, 3)
+mi_matriz.setElemento(1, 0, 4)
+mi_matriz.setElemento(1, 1, 5)
+mi_matriz.setElemento(1, 2, 6)
+mi_matriz.setElemento(2, 0, 7)
+mi_matriz.setElemento(2, 1, 8)
+mi_matriz.setElemento(2, 2, 9)
 
-    def addMatrix(self, matrix):
-        if len(matrix) != self.rows or len(matrix[0]) != self.columns:
-            print("Error: la matriz argumento no tiene el mismo tamaño que la matriz actual.")
-            return
-        for i in range(self.rows):
-            for j in range(self.columns):
-                self.matrix[i][j] += matrix[i][j]
+# Imprimir la matriz
+print("Matriz original:")
+for fila in mi_matriz.matriz:
+    print(fila)
 
-    def multMatrix(self, matrix):
-        if len(matrix) != self.columns:
-            print("Error: el número de filas de la matriz argumento no coincide con el número de columnas de la matriz actual.")
-            return
-        result = [[0 for j in range(len(matrix[0]))] for i in range(self.rows)]
-        for i in range(self.rows):
-            for j in range(len(matrix[0])):
-                for k in range(self.columns):
-                    result[i][j] += self.matrix[i][k] * matrix[k][j]
-        self.matrix = result
+# Sumar otra matriz a la matriz actual
+otra_matriz = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+mi_matriz.sumarMatriz(otra_matriz)
+
+# Imprimir la matriz después de la suma
+print("Matriz después de la suma:")
+for fila in mi_matriz.matriz:
+    print(fila)
+
+# Multiplicar la matriz actual por otra matriz
+otra_matriz = [[2, 2], [2, 2], [2, 2]]
+mi_matriz.multiplicarMatriz(otra_matriz)
+
+# Imprimir la matriz después de la multiplicación
+print("Matriz después de la multiplicación:")
+for fila in mi_matriz.matriz:
+    print(fila)
+
