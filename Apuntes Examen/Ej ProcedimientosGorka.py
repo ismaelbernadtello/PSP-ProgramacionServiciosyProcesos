@@ -5,70 +5,66 @@ finalmente creará un fork de si mismo.
 El segundo proceso a los 5 segundos cambiará la prioriodad del primer proceso.
 y lanzará el comando ping a la web de google
 """
-import subprocess
-import psutil,time,os,multiprocessing
+import os, psutil, time, subprocess, multiprocessing, sys
 
-def proceso_1():
-    #Creo el proceso
-    print("Proceso 1 creado correctamente.")
-    
-    # Esperar 10 segundos
-    for i in range(10):
-        print("Esperando los 10 segundos, segundos actual: " + str(i+1))
-        time.sleep(1)
-    
-    #Para evitar que se haga un bucle infinito de forks
-    if os.fork() == 0:
-        print("Fork creado correctamente.")
-        os._exit(0)
-    
+def proceso1(PROCESO_PADRE_PID):
+    print(f"Proceso1 con PID: {os.getpid()} creado.")
+    time.sleep(10)  # El primer proceso vive 10 segundos
 
-def proceso_2():
-    # Creo el proceso
-    print("Proceso 2 creado correctamente.")
-    
-    # Esperar 5 segundos
-    for i in range(5):
-        print("Esperando los 5 segundos, segundo actual: " + str(i+1))
-        time.sleep(1)
-    
-    # Cambiar la prioridad del primer proceso
-    print("Prioridad del proceso 1: " + str(psutil.Process(proceso1.pid).nice()))
-    psutil.Process(proceso1.pid).nice(10)
-    print("Prioridad del proceso 1 cambiada correctamente, nueva prioridad: " + str(psutil.Process(proceso1.pid).nice()))
-    
-    # Lanzar el comando ping a la web de google
+    # Enviar señal para terminar el proceso2
+    for proceso in psutil.process_iter(['pid','name']):
+        if proceso.name() == "python3.9.exe" and int(proceso.info['pid']) != os.getpid():
+            proceso.kill()
+
+    # Evitar bucle infinito al realizar el fork a sí mismo
+    if os.getppid() == PROCESO_PADRE_PID:
+        # Realizar un fork de sí mismo
+        print(PROCESO_PADRE_PID, os.getpid())
+        if esWindows():
+            proceso_principal = multiprocessing.Process(name="procesoFork",target=proceso1, args=(PROCESO_PADRE_PID,))
+            proceso_principal.start()
+            print("esperando 10 segundos para volver a hacer el fork si procede")
+        else:
+            os.fork() # adaptar esta parte si se usa windows
+            print("esperando 10 segundos para volver a hacer el fork si procede")
+
+    else:
+        print("ya no se hace nada mas puedes darle al enter para salir")
+
+def proceso2():
+    print(f"Proceso2 con PID: {os.getpid()} creado.")
+    time.sleep(5)  # El segundo proceso vive 5 segundos
+    # Ejecutar el comando ping en el proceso2
+    subprocess.run(["ping", "google.com"])
+
+def esWindows():
     try:
-        resultado_ping = subprocess.run(["ping", "-c", "4", "google.com"], check=True, capture_output=True)
-        print("Resultado del ping a google.com:")
-        print(resultado_ping.stdout.decode())
-    except subprocess.CalledProcessError as e:
-        print(f"Error al hacer ping a google.com: {e.stderr.decode()}")
+        sys.getwindowsversion()
+    except AttributeError:
+        return (False)
+    else:
+        return (True)
 
+
+
+def cambiar_prioridad():
+    for proceso in psutil.process_iter(['pid','name']):
+        if proceso.info['name'] == "python3.9.exe" and int(proceso.info['pid']) != os.getpid():
+            if esWindows():
+                subprocess.check_output("wmic process where processid=\""+str(os.getpid())+"\" CALL   setpriority \"below normal\"")
+            else:
+                proceso.info['pid'].nice(8)
 
 if __name__ == "__main__":
-    #Creo el primer proceso
-    proceso1 = multiprocessing.Process(target=proceso_1,name="proceso1")
-    proceso2 = multiprocessing.Process(target=proceso_2,name="proceso2")
-    
-    # Creo el segundo proceso
-    
-    proceso1.start()
-    proceso2.start()
-    
-    proceso1.join()
-    
-    # Cuando termina el primer proceso se mata al otro proceso
-    try:
-        for proc in psutil.process_iter():
-            if proc.pid == proceso2.pid:
-                print("Proceso a matar: " + str(proc.pid))
-                proc.kill()
-                print("Proceso matado correctamente.")
-                break
-    except psutil.NoSuchProcess:
-        print("No existe un proceso con el PID " + str(proceso2.pid))
-        
-    proceso2.join()
-    
-    print("Terminado")
+    PROCESO_PADRE_PID = os.getpid()
+
+    proceso_principal = multiprocessing.Process(name="proceso1",target=proceso1, args=(PROCESO_PADRE_PID,))
+    proceso_secundario = multiprocessing.Process(name="proceso2",target=proceso2, args=())
+
+    proceso_principal.start()
+    proceso_secundario.start()
+
+    proceso_principal.join()
+    proceso_secundario.join()
+
+    print("Proceso principal finalizado")
