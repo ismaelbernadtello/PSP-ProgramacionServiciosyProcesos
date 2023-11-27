@@ -8,8 +8,8 @@ def escribeLetter(letter):
 print ("INICIO")
 t1 = threading.Thread(target=escribeLetter, args=("Y"))
 t1.start()
-#t2 = threading.Thread(target=escribeLetter, args=("X"))
-#t2.start()
+# t2 = threading.Thread(target=escribeLetter, args=("X"))
+# t2.start()
 
 for i in range(10):
-  print ("X", end="", flush=True)
+  print ("X", end="", flush=True) 

@@ -11,6 +11,7 @@ nombres = ["Julio", "Javier", "Eladio", "Jose", "Manuel"]
 hilos = list()
 for n in nombres:
   # variable n es un string, and n, is a tuple with one element
+  #kwargs es un diccionario y lo pasamos como argunmento a la funcion
   t = threading.Thread(target=thread_Apellido, args=(n,), kwargs={'inicio':5, 'fin':8})
   hilos.append(t)
   t.start()
