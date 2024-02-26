@@ -15,6 +15,8 @@ import smtplib  # Importa módulo para el envío de correos electrónicos
 from ftplib import FTP  # Importa módulo para transferencia de archivos FTP
 
 # Definición de un manejador de peticiones HTTP personalizado
+
+
 class HelloHandler(BaseHTTPRequestHandler):
     # Método para manejar peticiones HEAD
     def do_HEAD(self):
@@ -207,7 +209,6 @@ class HelloHandler(BaseHTTPRequestHandler):
 
         print("Upload FTP end")
 
-    # Método para recuperar archivos del servidor FTP
     def recuperarArchivoFTP(self):
         print("Recuperar archivos del FTP")
 
@@ -241,8 +242,8 @@ class HelloHandler(BaseHTTPRequestHandler):
             # Se envia al servidor FTP el comando LIST para obtener el listado de archivos en el servidor FTP
             conn.retrlines('LIST')
 
-
     # Método para enviar correos electrónicos
+
     def sendEmail(self):
         print("Enviar email")
         # Se conecta al servidor SMTP con los parámetros especificados
